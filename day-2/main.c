@@ -20,7 +20,7 @@ char* parse_ball(char *endptr, Ball ball) {
     if (strncmp(color, "red", 3) == 0) {
         ball[0] = n;
         end += 3; 
-    } else if (strncmp(color, "green", 6) == 0) {
+    } else if (strncmp(color, "green", 5) == 0) {
         ball[1] = n;
         end += 5; 
     } else if (strncmp(color, "blue", 4) == 0) {
@@ -62,37 +62,46 @@ const int BLUE_BALLS = 14;
 const int GREEN_BALLS = 13;
 
 int main() {
-    int sum = 0;
+    int sum_p1 = 0;
+    int sum_p2 = 0;
     char line[LINE_MAX];
 
 
     while (fgets(line, LINE_MAX, stdin)) {
-        printf("line: %s\n", line);
-
         bool isValid = true;
         char* endptr;
         long game = strtol(&line[5], &endptr, 10);
-        printf("game = %ld\n", game);
 
         // ignore ": "
         endptr += 1;
 
+        Turn max = {0, 0, 0};
         while (*endptr != '\n' && *endptr != '\0') {
             Turn t = {0, 0, 0};
             endptr = parse_turn(endptr, t);
-            printf("turn: red = %d, green = %d, blue = %d\n", t[0], t[1], t[2]);
+
+            // part 1 logic
             if (t[0] > RED_BALLS || t[1] > GREEN_BALLS || t[2] > BLUE_BALLS) {
                 isValid = false;
+            }
+
+            // part 2 logic
+            for (int i = 0; i < 3; i++) {
+              if (t[i] > max[i]) {
+                max[i] = t[i];
+              }
             }
         }
 
         if (isValid) {
-            sum += game;
+            sum_p1 += game;
         }
 
-        printf("\n=================================== score = %d\n", sum);
+        // part 2 logic
+        int score = max[0] * max[1] * max[2];
+        sum_p2 += score;
     }
 
-    printf("\nScore: %d\n", sum);
+    printf("Part 1: %d, Part 2: %d\n", sum_p1, sum_p2);
     return 0;
 }
